@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from .entities import Transaction
 from .utils import match_category, parse_float, read_pdf, should_exclude
 
-PAT_FILE_PATH = r"chequing statement"
+PAT_FILE_PATH = r"(chequing|savings) statement"
 PAT_MONTH_SHORT = r"jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec"
 PAT_MONTH_LONG = r"january|february|march|april|may|june|july|august|september|october|november|december"
 PAT_DAY = r"\d{1,2}"
