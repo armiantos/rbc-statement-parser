@@ -5,7 +5,7 @@ from typing import List, Optional
 from .entities import Transaction
 from .utils import match_category, parse_float, read_pdf, should_exclude
 
-PAT_FILE_PATH = r"visa statement"
+PAT_FILE_PATH = r"(visa|mastercard) statement"
 PAT_MONTH = r"jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec"
 PAT_DAY = r"\d{1,2}"
 PAT_YEAR = r"\d{4}"
