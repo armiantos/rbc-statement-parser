@@ -86,8 +86,6 @@ def main():
     if out_file:
         write_file(out_str, out_file)
 
-    print(out_str)
-    print()
     print(f"Parsing statements... OK: {len(transactions)} transaction(s)")
 
 
