@@ -16,10 +16,16 @@ PAT_DATE_SHORT = rf"{PAT_DAY} (?:{PAT_MONTH_SHORT})"
 PAT_DATE_LONG = rf"((?:{PAT_MONTH_LONG})) ({PAT_DAY})(?:, )?({PAT_YEAR})?"
 PAT_AMOUNT = r"-?\$?[\d,]+\.\d{2}"
 
+BALANCE_START = rf"Your opening balance on .+<\/p>\n<p.+>({PAT_AMOUNT})<\/span><\/p>"
+BALANCE_END = rf"Your closing balance on .+<\/p>\n<p.+>= ({PAT_AMOUNT})<\/span><\/b><\/p>"
 
 def is_chequing(file_path: str) -> bool:
     return bool(re.search(PAT_FILE_PATH, file_path, re.IGNORECASE))
 
+def extract_balance(pattern: str, pdf: str) -> float:
+    if match := re.search(pattern, pdf):
+        return parse_float(match[1])
+    return -1
 
 def extract_start_date(pdf: str) -> datetime | None:
     regex = rf"from ({PAT_DATE_LONG}) to ({PAT_DATE_LONG})"
@@ -115,6 +121,15 @@ def parse_chequing(
 ) -> List[Transaction]:
     pdf = read_pdf(pdf_path, html=True)
     start_date = extract_start_date(pdf)
+
+    opening_balance = extract_balance(BALANCE_START, pdf)
+    if opening_balance < 0:
+        raise Exception("Couldn't parse opening balance")
+
+    ending_balance = extract_balance(BALANCE_END, pdf)
+    if ending_balance < 0:
+        raise Exception("Couldn't parse ending balance")
+
     lines = pdf.splitlines()
     transactions = []
     pat = r"^<p.*</p>$"
