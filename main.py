@@ -72,7 +72,7 @@ def main():
         ],
         key=lambda tx: tx["date"],
     )
-    out_str = config.get("format")
+    out_str = config.get("format") + "\n"
     out_str += "\n".join(
         format_transaction(
             tx,
