@@ -29,7 +29,7 @@ def parse_files(path: str) -> list:
     elif os.path.isfile(path) and path.lower().endswith(".pdf"):
         files = [os.path.abspath(path)]
 
-    return files
+    return sorted(files)
 
 
 def parse_args() -> tuple[list, dict, str]:
