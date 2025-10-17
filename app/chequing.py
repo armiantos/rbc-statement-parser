@@ -1,3 +1,4 @@
+from functools import reduce
 import re
 from datetime import datetime
 from typing import Dict, List, Optional
@@ -164,4 +165,12 @@ def parse_chequing(
                     "date": tx.get("date"),
                 }
 
+    if not validate_transactions(opening_balance, ending_balance, transactions):
+        raise Exception("Transactions don't line up")
+
     return transactions
+
+def validate_transactions(opening_balance: float, ending_balance: float, transactions: List[Transaction]) -> bool:
+    diffs = [transaction["amount"] for transaction in transactions]
+    diff = reduce(lambda x, y: x + y, diffs)
+    return abs(opening_balance + diff - ending_balance) < 1
