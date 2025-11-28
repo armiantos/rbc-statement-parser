@@ -14,12 +14,21 @@ def upsert_schema():
 def has_been_parsed(
     path_to_file: str
 ) -> bool:
-    upsert_schema()
     with open(path_to_file, mode='rb') as file:
         contents = file.read()
-        sha1_hash = hashlib.sha1(contents)
+        sha1_hash = hashlib.sha1(contents).hexdigest()
         con = sqlite3.connect(path_to_scanned)
         res = con.execute('select hash from scanned where file = ?', [path_to_file]).fetchone()
         if res is None:
             return False
         return res[0] == sha1_hash
+
+def mark_as_parsed(
+    path_to_file: str
+) -> bool:
+    with open(path_to_file, mode='rb') as file:
+        contents = file.read()
+        sha1_hash = hashlib.sha1(contents).hexdigest()
+        con = sqlite3.connect(path_to_scanned)
+        con.execute('insert into scanned(file, hash) values (?, ?)', (path_to_file, sha1_hash)).fetchone()
+        con.commit()
