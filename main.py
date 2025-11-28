@@ -4,6 +4,7 @@ import os
 import sys
 
 from app.chequing import is_chequing, parse_chequing
+from app.dedup import has_been_parsed
 from app.entities import Config
 from app.utils import format_transaction, write_file
 from app.visa import is_visa, parse_visa
@@ -25,6 +26,7 @@ def parse_files(path: str) -> list:
             os.path.abspath(os.path.join(path, f))
             for f in os.listdir(path)
             if f.lower().endswith(".pdf")
+                and not has_been_parsed(os.path.join(path, f))
         ]
     elif os.path.isfile(path) and path.lower().endswith(".pdf"):
         files = [os.path.abspath(path)]
