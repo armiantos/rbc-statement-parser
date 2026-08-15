@@ -7,7 +7,7 @@ verify_ssl = true
 pylint = "*"
 
 [requires]
-python_version = "3.12.4"
+python_version = "3.14.4"
 
 [packages]
 pymupdf = "*"
