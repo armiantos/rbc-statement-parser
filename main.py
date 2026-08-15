@@ -1,3 +1,4 @@
+from pathlib import Path
 import argparse
 import json
 import os
@@ -67,13 +68,10 @@ def parse_pdf(file_path: str, categories: dict, excludes: list) -> list:
 
     return []
 
-
-def main():
-    files, config, out_file = parse_args()
+def process_file(file, config, out_dir):
     transactions = sorted(
         [
             tx
-            for file in files
             for tx in parse_pdf(file, config.get("categories"), config.get("excludes"))
         ],
         key=lambda tx: tx["date"],
@@ -89,13 +87,20 @@ def main():
         for tx in transactions
     )
 
-    for file in files:
-        mark_as_parsed(file)
+    mark_as_parsed(file)
 
-    if out_file:
+    if out_dir:
+        file_name = os.path.basename(file)
+        filename_with_csv = os.path.splitext(file_name)[0] + '.csv'
+        out_file =Path(out_dir) / filename_with_csv
         write_file(out_str, out_file)
 
     print(f"Parsing statements... OK: {len(transactions)} transaction(s)")
+
+def main():
+    files, config, out_file = parse_args()
+    for file in files:
+        process_file(file, config, out_file)
 
 
 if __name__ == "__main__":
