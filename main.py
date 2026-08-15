@@ -5,7 +5,6 @@ import os
 import sys
 
 from app.chequing import is_chequing, parse_chequing
-from app.dedup import has_been_parsed, mark_as_parsed, upsert_schema
 from app.entities import Config
 from app.utils import format_transaction, write_file
 from app.visa import is_visa, parse_visa
@@ -27,7 +26,6 @@ def parse_files(path: str) -> list:
             os.path.abspath(os.path.join(path, f))
             for f in os.listdir(path)
             if f.lower().endswith(".pdf")
-                and not has_been_parsed(os.path.abspath(os.path.join(path, f)))
         ]
     elif os.path.isfile(path) and path.lower().endswith(".pdf"):
         files = [os.path.abspath(path)]
@@ -46,9 +44,6 @@ def parse_args() -> tuple[list, dict, str]:
 
     args = parser.parse_args()
     config = parse_config(args.config)
-
-    if config.get("enable_dedup"):
-        upsert_schema()
 
     files = parse_files(args.path)
 
@@ -86,8 +81,6 @@ def process_file(file, config, out_dir):
         )
         for tx in transactions
     )
-
-    mark_as_parsed(file)
 
     if out_dir:
         file_name = os.path.basename(file)
